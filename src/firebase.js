@@ -1,20 +1,15 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp } from 'firebase/app';
+import {getAuth} from 'firebase/auth';
+import {getFirestore} from 'firebase/firestore';
+import {getStorage} from 'firebase/storage';
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAH7rnREbJzqYX4q2t0k3i4sippOEvicCQ",
-  authDomain: "react-messenger-86941.firebaseapp.com",
-  databaseURL: "https://react-messenger.firebaseio.com",
-  projectId: "react-messenger-86941",
-  storageBucket: "react-messenger-86941.appspot.com",
-  messagingSenderId: "931476108764",
-  appId: "1:931476108764:web:077dc3e69bf06536c14b19"
+  apiKey: "AIzaSyCz3D99n5lqrt8nuMJOqI0FvrYoIvpuJLc",
+  authDomain: "chatty-836d0.firebaseapp.com",
+  projectId: "chatty-836d0",
+  storageBucket: "chatty-836d0.appspot.com",
+  messagingSenderId: "540067435834",
+  appId: "1:540067435834:web:3f4585e792b00115136c03"
 };
 
 // Initialize Firebase
@@ -23,4 +18,5 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-export { auth, db, storage };
+
+export {auth,db,storage};

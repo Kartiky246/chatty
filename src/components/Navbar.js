@@ -1,44 +1,48 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
-import { auth, db } from "../firebase";
-import { signOut } from "firebase/auth";
-import { updateDoc, doc } from "firebase/firestore";
-import { AuthContext } from "../context/auth";
-import { useHistory } from "react-router-dom";
+import React from 'react';
+import {Link, useNavigate} from 'react-router-dom';
+import {signOut} from 'firebase/auth';
+import{auth,db} from '../firebase';
+import{doc, updateDoc} from 'firebase/firestore';
+import { useContext } from 'react';
+import {authContext} from '../context/Auth';
 
-const Navbar = () => {
-  const history = useHistory();
-  const { user } = useContext(AuthContext);
 
-  const handleSignout = async () => {
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
-      isOnline: false,
-    });
+
+
+export default function Navbar() {
+
+  const {online ,setOnline} = useContext(authContext);
+
+ 
+  const navigate = useNavigate();
+
+  const out = async () => {
+    await updateDoc(doc(db,"users", auth.currentUser.uid), {
+      isOnline: false
+    })
+
     await signOut(auth);
-    history.replace("/login");
-  };
+    setOnline(false);
+    navigate('/login');
+
+  }
   return (
     <nav>
-      <h3>
-        <Link to="/">Messenger</Link>
-      </h3>
-      <div>
-        {user ? (
-          <>
-            <Link to="/profile">Profile</Link>
-            <button className="btn" onClick={handleSignout}>
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/register">Register</Link>
-            <Link to="/login">Login</Link>
-          </>
-        )}
-      </div>
-    </nav>
-  );
-};
+        <h2>
+            <Link to ="/">Chatty</Link>
+        </h2>
+        <div>
 
-export default Navbar;
+            {online ? <>
+            <Link to ="/profile">Profile</Link>
+            <Link to = "/" onClick={out}>Log Out</Link>
+            </>:<>
+            <Link to ="/register">Register</Link>
+            <Link to = "/login" >Log In</Link>
+            </>}
+            
+        </div>
+      
+    </nav>
+  )
+}

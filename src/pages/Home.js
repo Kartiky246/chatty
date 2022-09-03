@@ -1,57 +1,63 @@
-import React, { useEffect, useState } from "react";
-import { db, auth, storage } from "../firebase";
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  addDoc,
-  Timestamp,
-  orderBy,
-  setDoc,
-  doc,
-  getDoc,
-  updateDoc,
-} from "firebase/firestore";
-import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
-import User from "../components/User";
-import MessageForm from "../components/MessageForm";
-import Message from "../components/Message";
+import React, { useEffect, useState } from 'react'
+import { db, auth, storage} from "../firebase";
+import{ref, getDownloadURL, uploadBytes} from 'firebase/storage';
+import {collection,query,where,onSnapshot, addDoc, Timestamp, orderBy, setDoc, doc, updateDoc, getDoc, getDocs} from "firebase/firestore";
+import User from '../components/User';
+import MessageForm from '../components/MessageForm';
+import Messages from '../components/Messages';
+import defaultDP from '../profile.png';
 
-const Home = () => {
+
+
+
+export default  function Home() {
   const [users, setUsers] = useState([]);
   const [chat, setChat] = useState("");
-  const [text, setText] = useState("");
+  const [text, setText] = useState('');
   const [img, setImg] = useState("");
   const [msgs, setMsgs] = useState([]);
+  
 
-  const user1 = auth.currentUser.uid;
+  // user who is running the app
 
+  
+  let user1 = (auth.currentUser ?  auth.currentUser.uid : null);
+  
   useEffect(() => {
+    user1 = auth.currentUser.uid;
     const usersRef = collection(db, "users");
-    // create query object
-    const q = query(usersRef, where("uid", "not-in", [user1]));
-    // execute query
-    const unsub = onSnapshot(q, (querySnapshot) => {
+    
+    // create a query object
+    const q = query(usersRef, where("uid", "not-in", [(user1) ? (user1) : (null)]));
+    
+    // execute the query with realtime listner
+
+      const sub = onSnapshot(q, (QuerySnapshot) => {
       let users = [];
-      querySnapshot.forEach((doc) => {
+      QuerySnapshot.forEach((doc) => {
         users.push(doc.data());
       });
       setUsers(users);
     });
-    return () => unsub();
+    
+    return () => sub();
+
+    
+
+  
+
   }, []);
 
-  const selectUser = async (user) => {
-    setChat(user);
+  useEffect(() => {
 
-    const user2 = user.uid;
-    const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
+    const user2 = chat.uid;
+    const id = user1>user2 ? user2 + user1 : user1 + user2;
 
-    const msgsRef = collection(db, "messages", id, "chat");
+    if(chat.id!==0){
+    const msgsRef = collection(db, "message", id, "chat");
     const q = query(msgsRef, orderBy("createdAt", "asc"));
 
-    onSnapshot(q, (querySnapshot) => {
+    const mssgSnap = onSnapshot(q, (querySnapshot) => {
       let msgs = [];
       querySnapshot.forEach((doc) => {
         msgs.push(doc.data());
@@ -59,42 +65,73 @@ const Home = () => {
       setMsgs(msgs);
     });
 
-    // get last message b/w logged in user and selected user
-    const docSnap = await getDoc(doc(db, "lastMsg", id));
-    // if last message exists and message is from selected user
-    if (docSnap.data() && docSnap.data().from !== user1) {
-      // update last message doc, set unread to false
-      await updateDoc(doc(db, "lastMsg", id), { unread: false });
-    }
-  };
+   
+    return () => mssgSnap();
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
+  },[chat]);
+  
+
+  // function for selecting user and acitvating the chat
+
+  const selectUser =  async (user) => {
+    setChat(user);
+    const user2 = user.uid;
+    const id = user1>user2 ? user2 + user1 : user1 + user2;
+
+    
+
+    
+
+    await updateDoc(doc(db, "lastMssg", id), {
+
+      unread: false
+
+    })
+
+
+    
+
+   
+ 
+
+  }
+
+  // function for sending message and saving it on firestorage
+
+  const sendMessage = async () => {
+    
+
+    // user friend
     const user2 = chat.uid;
 
-    const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
+    // making unique identifier for sotring mssg of two users
+    const id  = user1>user2 ? (user2 + user1) : (user1 + user2);
 
     let url;
-    if (img) {
-      const imgRef = ref(
-        storage,
-        `images/${new Date().getTime()} - ${img.name}`
-      );
+
+    if(img){
+      const imgRef = ref(storage, `images/${new Date().getTime()} - ${img.name} `);
       const snap = await uploadBytes(imgRef, img);
-      const dlUrl = await getDownloadURL(ref(storage, snap.ref.fullPath));
-      url = dlUrl;
+      const imgLink = await getDownloadURL(ref(storage, snap.ref.fullPath));
+      url = imgLink;
     }
 
-    await addDoc(collection(db, "messages", id, "chat"), {
+    await addDoc(collection(db, "message", id, "chat"), {
       text,
       from: user1,
       to: user2,
       createdAt: Timestamp.fromDate(new Date()),
-      media: url || "",
-    });
+      media: url ? url : ""
+    })
 
-    await setDoc(doc(db, "lastMsg", id), {
+
+ 
+
+    // making new collection for the latest send mssg b/w two users
+
+    await setDoc(doc(db, "lastMssg", id), {
       text,
       from: user1,
       to: user2,
@@ -103,48 +140,51 @@ const Home = () => {
       unread: true,
     });
 
+
     setText("");
     setImg("");
-  };
-  return (
-    <div className="home_container">
-      <div className="users_container">
-        {users.map((user) => (
-          <User
-            key={user.uid}
-            user={user}
-            selectUser={selectUser}
-            user1={user1}
-            chat={chat}
-          />
-        ))}
-      </div>
-      <div className="messages_container">
-        {chat ? (
-          <>
-            <div className="messages_user">
-              <h3>{chat.name}</h3>
-            </div>
-            <div className="messages">
-              {msgs.length
-                ? msgs.map((msg, i) => (
-                    <Message key={i} msg={msg} user1={user1} />
-                  ))
-                : null}
-            </div>
-            <MessageForm
-              handleSubmit={handleSubmit}
-              text={text}
-              setText={setText}
-              setImg={setImg}
-            />
-          </>
-        ) : (
-          <h3 className="no_conv">Select a user to start conversation</h3>
-        )}
-      </div>
-    </div>
-  );
-};
 
-export default Home;
+  }
+
+if(!user1){
+  return (null);
+}
+
+
+  
+    return (
+      <div className='home_container'>
+        <div className="users_container" style={{margin:"5px"}}>
+          {users.map(user => <User key = {user.uid} user = {user} user1 ={user1} chat ={chat} selectUser = {selectUser}/>)}
+          
+          
+        </div>
+
+        <div className= {`messages_container ${!chat ? "empty" : null}`}   >
+          {chat ? (
+            <>
+          <div className="messages_user" style = {{backgroundColor: "#f0f2f5"}} >
+            <span><img src={chat.avatar||defaultDP} alt="" /></span>
+            <span><h3>{chat.name}</h3></span>
+          </div>
+          <div className="messages" >
+            {msgs.length ? (msgs.map((msg,i)=> (
+               <Messages key = {i} msg = {msg} user1 = {user1} /> 
+          ))) : (null)}
+           
+      
+          
+          <MessageForm text = {text} setText = {setText} sendMessage={sendMessage} img = {img} setImg = {setImg}/>
+          </div>
+          
+          </>) : <div className="wp no_conv"><h3 className ='no_conv'> Select a user to start conversation </h3>
+          
+            <h2>Chatty</h2>
+           </div> }
+        </div>
+      </div>
+    )
+  }
+ 
+  
+
