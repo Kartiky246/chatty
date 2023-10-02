@@ -5,7 +5,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import './App.css';
-import {authContext} from './context/Auth'
+import {AuthContext} from './context/Auth'
 import { Navigate } from 'react-router-dom';
 import { useContext } from 'react';
 
@@ -15,7 +15,7 @@ import { useContext } from 'react';
 
 
 function App() {
-  const {online} = useContext(authContext);
+  const {online} = useContext(AuthContext);
   return (
     <BrowserRouter>
       <Navbar/>

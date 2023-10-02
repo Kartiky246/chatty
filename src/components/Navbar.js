@@ -4,14 +4,14 @@ import {signOut} from 'firebase/auth';
 import{auth,db} from '../firebase';
 import{doc, updateDoc} from 'firebase/firestore';
 import { useContext } from 'react';
-import {authContext} from '../context/Auth';
+import {AuthContext} from '../context/Auth';
 
 
 
 
 export default function Navbar() {
 
-  const {online ,setOnline} = useContext(authContext);
+  const {online ,setOnline} = useContext(AuthContext);
 
  
   const navigate = useNavigate();
