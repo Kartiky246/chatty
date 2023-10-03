@@ -5,7 +5,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import {doc, updateDoc} from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
-import {AuthContext} from '../context/Auth';
+import {authContext} from '../context/Auth';
 
 
 
@@ -13,7 +13,7 @@ import {AuthContext} from '../context/Auth';
 
 
 export default function Login() {
-    const {setOnline} = useContext(AuthContext);
+    const {setOnline} = useContext(authContext);
 
     const navigate = useNavigate();
     const [data, setData] = useState({

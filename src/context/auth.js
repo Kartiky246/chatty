@@ -1,26 +1,51 @@
-import { createContext, useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase";
-import Loading from "../components/Loading";
+import { createContext } from 'react';
+import { useState, useEffect } from 'react';
+import Loading from '../components/Loading';
+import { auth } from '../firebase';
 
-export const AuthContext = createContext();
 
-const Auth = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-  }, []);
-  if (loading) {
-    return <Loading />;
-  }
-  return (
-    <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
-  );
-};
 
-export default Auth;
+import React from 'react'
+
+const authContext = createContext();
+
+
+
+
+export default function Auth({children}) {
+
+    const [online, setOnline] = useState(auth.currentUser);
+    const [loading, setLoading] = useState(true);
+  
+
+
+    useEffect(() => {
+      setTimeout(() => {
+        setLoading(false);
+        setOnline(auth.currentUser ? true: false)
+      },1000)
+      }, []);
+
+
+     
+     
+
+      while(loading){
+        return <Loading />;
+      }
+
+        return (
+          <authContext.Provider value={{online, setOnline}}>
+            {children}
+          </authContext.Provider>
+        )
+      
+
+}
+
+
+
+
+
+export {authContext};

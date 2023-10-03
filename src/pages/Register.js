@@ -5,11 +5,11 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import {setDoc, doc, Timestamp} from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
-import {AuthContext} from '../context/Auth';
+import {authContext} from '../context/Auth';
 
 
 export default function Register() {
-  const {setOnline} = useContext(AuthContext);
+  const {setOnline} = useContext(authContext);
   
     const navigate = useNavigate();
     const [data, setData] = useState({
