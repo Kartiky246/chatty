@@ -4,13 +4,18 @@ import {getFirestore} from 'firebase/firestore';
 import {getStorage} from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDbX3CWWkUlcp18egJqw-XKZOM460huNLQ",
-  authDomain: "chatty-17768.firebaseapp.com",
-  projectId: "chatty-17768",
-  storageBucket: "chatty-17768.appspot.com",
-  messagingSenderId: "197300896016",
-  appId: "1:197300896016:web:dcbdf4b676a1796bad2595"
+  apiKey: "AIzaSyCHunPiag_Tiw8yaLvZn1LrbO8l30_44pQ",
+  authDomain: "chatty-85d17.firebaseapp.com",
+  projectId: "chatty-85d17",
+  storageBucket: "chatty-85d17.appspot.com",
+  messagingSenderId: "554525489774",
+  appId: "1:554525489774:web:c9586464d5b4334dff047f"
 };
+
+
+
+
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

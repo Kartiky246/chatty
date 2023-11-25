@@ -9,7 +9,6 @@ import defaultDP from '../profile.png';
 
 
 
-
 export default  function Home() {
   const [users, setUsers] = useState([]);
   const [chat, setChat] = useState("");
@@ -98,6 +97,9 @@ export default  function Home() {
 
   }
 
+  const openTheVideo = () =>{
+  }
+
   // function for sending message and saving it on firestorage
 
   const sendMessage = async () => {
@@ -164,8 +166,11 @@ if(!user1){
           {chat ? (
             <>
           <div className="messages_user" style = {{backgroundColor: "#f0f2f5"}} >
-            <span><img src={chat.avatar||defaultDP} alt="" /></span>
+          <div className='user-info'>
+          <span><img src={chat.avatar||defaultDP} alt="" /></span>
             <span><h3>{chat.name}</h3></span>
+          </div>
+            <span onClick={openTheVideo} className="material-symbols-outlined">video_call</span>
           </div>
           <div className="messages" >
             {msgs.length ? (msgs.map((msg,i)=> (

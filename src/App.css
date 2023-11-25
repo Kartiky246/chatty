@@ -232,10 +232,19 @@ section.form{
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding-right: 55px;
   
   /* text-align: center; */
   /* border-bottom: 1px solid #667781; */
 }
+
+.user-info{
+  display: flex;
+  align-items: center;
+}
+
+
 
 .messages_user img{
   width: 40px;
@@ -468,3 +477,44 @@ section.form{
     max-width: 100%;
   }
 }
+
+
+.stream-box {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+/* Style for the modal header */
+.modal-header {
+  background-color: #f0f0f0;
+  border-bottom: none;
+}
+
+/* Style for the modal title */
+.modal-title {
+  font-weight: bold;
+}
+
+/* Style for the modal footer */
+.modal-footer {
+  border-top: none;
+}
+
+/* Style for the accept and decline buttons */
+.modal-footer .btn {
+  width: 100px;
+}
+
+/* Optional: Adjust modal width if needed */
+.modal-dialog {
+  max-width: 800px;
+}
+
+/* Optional: Center the video streams */
+.stream-box video {
+  display: block;
+  margin: auto;
+}
+
