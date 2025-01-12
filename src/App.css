@@ -518,3 +518,13 @@ section.form{
   margin: auto;
 }
 
+.video-call-icon{
+  cursor: pointer;
+}
+
+video {
+  width: 300px;
+  margin: 10px;
+  position: absolute;
+  z-index: 5;
+}

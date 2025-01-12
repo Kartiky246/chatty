@@ -6,6 +6,7 @@ import User from '../components/User';
 import MessageForm from '../components/MessageForm';
 import Messages from '../components/Messages';
 import defaultDP from '../profile.png';
+import VideoCalls from '../components/Videocall';
 
 
 
@@ -15,6 +16,9 @@ export default  function Home() {
   const [text, setText] = useState('');
   const [img, setImg] = useState("");
   const [msgs, setMsgs] = useState([]);
+  const [openVideoCallContainer, setOpenVideoCallContainer] = useState(false);
+  const [callingUser, setCallingUser] = useState(null);
+  const [isCaller, setIsCaller] = useState(false);
   
 
   // user who is running the app
@@ -31,11 +35,24 @@ export default  function Home() {
     
     // execute the query with realtime listner
 
-      const sub = onSnapshot(q, (QuerySnapshot) => {
+      const sub = onSnapshot(usersRef, (QuerySnapshot) => {
       let users = [];
+      let isVideoCallOn = false;
       QuerySnapshot.forEach((doc) => {
-        users.push(doc.data());
+        const user = doc.data();
+        if(user.callingTo) isVideoCallOn=true;
+        if(user.uid!==user1){
+          users.push(doc.data());
+        }
       });
+      if(!isVideoCallOn) setOpenVideoCallContainer(false);
+      for(let i =0;i<users.length;i++){
+        if(users[i].callingTo && users[i].callingTo===user1){
+          const callingUser = users.find((u)=>u.uid===users[i].uid);
+          setCallingUser(callingUser);
+          setOpenVideoCallContainer(true);
+        }
+      }
       setUsers(users);
     });
     
@@ -90,15 +107,11 @@ export default  function Home() {
     })
 
 
-    
 
-   
- 
-
+  
   }
 
-  const openTheVideo = () =>{
-  }
+
 
   // function for sending message and saving it on firestorage
 
@@ -119,7 +132,7 @@ export default  function Home() {
       const imgLink = await getDownloadURL(ref(storage, snap.ref.fullPath));
       url = imgLink;
     }
-
+ 
     await addDoc(collection(db, "message", id, "chat"), {
       text,
       from: user1,
@@ -152,16 +165,55 @@ if(!user1){
   return (null);
 }
 
+const startCall = async () =>{  
+  setOpenVideoCallContainer(true);
+  updateUser(user1, chat.uid);
+  setIsCaller(true);
+ 
+}
+
+const endCall = async () =>{
+  setOpenVideoCallContainer(false);
+  setIsCaller(false);
+  for(let i =0; i<users.length;i++){
+    if(users[i].callingTo){
+      await updateUser(users[i].uid,null);
+    }
+  }
+  await updateUser(user1,null);
+  
+}
+
+
+const updateUser = async (userId,callingTo) => {
+  try {
+    // Reference to the user document
+    const userDocRef = doc(db, "users", userId);
+
+    // Update the document with new data
+    await updateDoc(userDocRef, {callingTo:callingTo });
+
+  } catch (error) {
+    console.error("Error updating user: ", error);
+  }
+}
+
+const generateCallIdFromUsers = (callerId, receiverId) => {
+  return `${callerId}_${receiverId}`;
+}
+
+const getRecieverName = ()=>{
+  return users.find((u)=>u.uid===chat.uid).name
+}
+
 
   
     return (
       <div className='home_container'>
+      {openVideoCallContainer && <VideoCalls isCaller={isCaller}  callId={generateCallIdFromUsers(user1,chat.uid)} recieverName={getRecieverName()} callingUser={callingUser} userId={user1} onClose={() => endCall()}/>}
         <div className="users_container" style={{margin:"5px"}}>
           {users.map(user => <User key = {user.uid} user = {user} user1 ={user1} chat ={chat} selectUser = {selectUser}/>)}
-          
-          
         </div>
-
         <div className= {`messages_container ${!chat ? "empty" : null}`}   >
           {chat ? (
             <>
@@ -170,7 +222,9 @@ if(!user1){
           <span><img src={chat.avatar||defaultDP} alt="" /></span>
             <span><h3>{chat.name}</h3></span>
           </div>
-            <span onClick={openTheVideo} className="material-symbols-outlined">video_call</span>
+          <div onClick={()=>startCall()} className='video-call-icon'>
+            <span  className="material-symbols-outlined">video_call</span>
+          </div>
           </div>
           <div className="messages" >
             {msgs.length ? (msgs.map((msg,i)=> (
