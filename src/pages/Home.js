@@ -201,16 +201,10 @@ const updateUser = async (userId,callingTo) => {
 const generateCallIdFromUsers = (callerId, receiverId) => {
   return `${callerId}_${receiverId}`;
 }
-
-const getRecieverName = ()=>{
-  return users.find((u)=>u.uid===chat.uid).name
-}
-
-
   
     return (
       <div className='home_container'>
-      {openVideoCallContainer && <VideoCalls isCaller={isCaller}  callId={generateCallIdFromUsers(user1,chat.uid)} recieverName={getRecieverName()} callingUser={callingUser} userId={user1} onClose={() => endCall()}/>}
+      {openVideoCallContainer && <VideoCalls isCaller={isCaller}  callId={generateCallIdFromUsers(user1,chat.uid)} recieverName={chat.name} callingUser={callingUser} userId={user1} onClose={() => endCall()}/>}
         <div className="users_container" style={{margin:"5px"}}>
           {users.map(user => <User key = {user.uid} user = {user} user1 ={user1} chat ={chat} selectUser = {selectUser}/>)}
         </div>
