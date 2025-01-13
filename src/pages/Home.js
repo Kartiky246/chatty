@@ -198,8 +198,11 @@ const updateUser = async (userId,callingTo) => {
   }
 }
 
-const generateCallIdFromUsers = (callerId, receiverId) => {
-  return `${callerId}_${receiverId}`;
+const generateCallIdFromUsers = () => {
+  if(isCaller){
+    return `${user1}_${chat.uid}`
+  }
+  return `${callingUser.uid}_${user1}`
 }
   
     return (
